@@ -29,6 +29,7 @@ if (process.env.NEXRENDER_REQUIRE_PLUGINS) {
     require('@nexrender/provider-s3');
     require('@nexrender/provider-ftp');
     require('@nexrender/provider-gs');
+    require('@nexrender/provider-plainly');
 }
 
 //
