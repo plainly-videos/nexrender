@@ -85,6 +85,7 @@ const sync = async (diff, localTemplateDir, templateBucket, downloadFn, log) => 
                         log(`Updating file: ${gsPath}`);
                         return await downloadFn(gsPath, localPath);
                     case DiffActions.DELETED:
+                        await fs.promises.unlink(localPath);
                         log(`Deleting file: ${localPath}`);
                         break;
                     default:
@@ -97,6 +98,11 @@ const sync = async (diff, localTemplateDir, templateBucket, downloadFn, log) => 
         // HOW TO CATCH ERROR IN DOWNLOAD???
         log(e);
     }
+
+    // If everything went right, replace hashes.json
+    const remoteHashesJsonPath = `${templateBucket}/hashes.json`;
+    const localHashesJsonPath = path.join(localTemplateDir, 'hashes.json');
+    await downloadFn(remoteHashesJsonPath, localHashesJsonPath);
 }
 
 

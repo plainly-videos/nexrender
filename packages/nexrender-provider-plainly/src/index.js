@@ -50,7 +50,13 @@ const download = async (job, settings, src, dest, params, type) => {
 
     await sync(diff, localTemplateDir, templateBucket, download, log);
 
-    // TODO: Fix paths inside aep, aepx
+    // Copy aep file to destination
+    const localAepFilePath = path.join(localTemplateDir, path.basename(src));
+    await fs.promises.copyFile(localAepFilePath, dest);
+    // Create footage shortcut (instead of fixing project paths...)
+    const localFootagePath = path.join(localTemplateDir, '(Footage)');
+    const destFootagePath = path.join(path.dirname(dest), '(Footage)');
+    await fs.promises.symlink(localFootagePath, destFootagePath, 'dir');
 }
 
 
