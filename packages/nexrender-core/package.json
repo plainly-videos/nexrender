@@ -22,7 +22,8 @@
     "@nexrender/action-upload": "^1.0.0",
     "@nexrender/provider-ftp": "^1.0.0",
     "@nexrender/provider-gs": "^1.0.0",
-    "@nexrender/provider-s3": "^1.0.0"
+    "@nexrender/provider-s3": "^1.0.0",
+    "@nexrender/provider-plainly": "^0.1.0"
   },
   "publishConfig": {
     "access": "public"
