@@ -38,15 +38,15 @@ const makeDiff = async (localHashesJsonPath, remoteHashesJsonPath) => {
         remoteHashesJson = JSON.parse(remoteHashesJson.toString('utf-8'));
 
         Object.keys({...localHashesJson, ...remoteHashesJson}).forEach(path => {
-            const existsLocally = localHashesJson[path];
-            const existsRemotely = remoteHashesJson[path];
+            const localHash = localHashesJson[path];
+            const remoteHash = remoteHashesJson[path];
 
-            if (existsLocally && existsRemotely) {
-                if (existsLocally === existsRemotely) { return; }
+            if (localHash && remoteHash) {
+                if (localHash === remoteHash) { return; }
                 // File is changed
                 diff[path] = DiffActions.CHANGED;
             } else {
-                if (existsLocally) { // File deleted
+                if (localHash) { // File deleted
                     diff[path] = DiffActions.DELETED;
                 } else {  // File added
                     diff[path] = DiffActions.ADDED;
