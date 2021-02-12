@@ -23,7 +23,7 @@
     "@nexrender/provider-ftp": "^1.0.0",
     "@nexrender/provider-gs": "^1.0.0",
     "@nexrender/provider-s3": "^1.0.0",
-    "@nexrender/provider-plainly": "link:./../nexrender-provider-plainly"
+    "@nexrender/provider-plainly": "file:./../nexrender-provider-plainly"
   },
   "publishConfig": {
     "access": "public"
