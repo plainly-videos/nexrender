@@ -4,7 +4,6 @@ node_js:
 
 script:
     - npm install
-    - npm install -g ./packages/nexrender-provider-plainly
     - npm run install-child
     - npm run start
     - npm run test
