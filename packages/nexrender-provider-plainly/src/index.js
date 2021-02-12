@@ -56,7 +56,7 @@ const download = async (job, settings, src, dest, params, type) => {
     // Create footage shortcut (instead of fixing project paths...)
     const localFootagePath = path.join(localTemplateDir, '(Footage)');
     const destFootagePath = path.join(path.dirname(dest), '(Footage)');
-    await fs.promises.symlink(localFootagePath, destFootagePath, 'dir');
+    await fs.promises.symlink(localFootagePath, destFootagePath, 'junction');
 }
 
 
