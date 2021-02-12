@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug Worker",
+        "cwd": "${workspaceFolder}",
+        "protocol": "inspector",
+        "envFile": "${workspaceFolder}/.env",
+        "program": "${workspaceFolder}/packages/nexrender-worker/src/bin.js",
+        "args": ["--host", "http://localhost:3050", "--secret", "nexrender"]
+      }
+    ]
+}
