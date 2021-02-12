@@ -37,8 +37,7 @@ module.exports = (job, settings) => {
     params.push('-comp', job.template.composition);
     params.push('-output', outputFileAE);
 
-    if (!settings.skipRender){
-
+    if (!settings.skipRender) {
         option(params, '-OMtemplate', job.template.outputModule);
         option(params, '-RStemplate', job.template.settingsTemplate);
 
@@ -60,16 +59,18 @@ module.exports = (job, settings) => {
         option(params, '-mem_usage', settings.imageCachePercent || 50, settings.maxMemoryPercent || 50);
     }
 
-    if (settings['ae-params']) {
-        for (param of settings['ae-params']) {
-            var ps = param.split(" ");
+    if (settings['aeParams']) {
+        for (param of settings['aeParams']) {
+            let ps = param.split(" ");
+
             if (ps.length > 0) {
-              params.push('-' + ps[0])
+                params.push('-' + ps[0])
             }
+
             if (ps.length > 1) {
-              params.push(ps[1])
-            }    
-        }        
+                params.push(ps[1])
+            }
+        }
     }
 
 
@@ -128,10 +129,12 @@ module.exports = (job, settings) => {
         });
 
         instance.on('error', err => reject(new Error(`Error starting aerender process: ${err}`)));
+
         instance.stdout.on('data', (data) => {
             output.push(parse(data.toString('utf8')));
             (settings.verbose && settings.logger.log(data.toString('utf8')));
         });
+
         instance.stderr.on('data', (data) => {
             output.push(data.toString('utf8'));
             (settings.verbose && settings.logger.log(data.toString('utf8')));
@@ -180,6 +183,10 @@ module.exports = (job, settings) => {
 
             resolve(job)
         });
+
+        if (settings.onInstanceSpawn) {
+            settings.onInstanceSpawn(instance, job, settings)
+        }
     })
 };
 

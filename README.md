@@ -97,6 +97,7 @@
     - [Binary](#wsl-binary)
     - [Workpath](#wsl-worthpath)
     - [Memory](#wsl-memory)
+  - [Problems](#problems)
   - [Development](#development)
   - [Project Values](#project-values)
   - [Awesome External Packages](#awesome-external-packages)
@@ -460,6 +461,41 @@ Second one is responsible for mainly job-related operations of the full cycle: d
 * `wslMap` - String, set WSL drive map, check [wsl](#wsl) for more info
 
 More info: [@nexrender/core](packages/nexrender-core)
+
+## Using the ${workPath} mask in @nexrender/action-encode
+
+The output of `@nexrender/action-encode` is always prepended by the working path of the job, so you don't have to guess paths. However if you want to use the working path of the job for something else such as encoding in multiple bitrates it is necessary to use the `${workPath}` mask.
+This is especially useful for HLS encoding
+
+```json
+//HLS encoding
+{
+    "module": "@nexrender/action-encode",
+    "output": "encoded_playlist_%v.m3u8",
+    "params": {
+        "-acodec": "aac",
+        "-vcodec": "libx264",
+        "-pix_fmt": "yuv420p",
+        "-map": [
+            "0:0",
+            "0:0",
+            "0:0"
+        ],
+        "-b:v:0": "2000k",
+        "-b:v:1": "1000k",
+        "-b:v:2": "500k",
+        "-f": "hls",
+        "-hls_time": "10",
+        "-hls_list_size": "0",
+        "-var_stream_map": "v:0,name:high v:1,name:medium v:2,name:low",
+        "-master_pl_name": "master.m3u8",
+        "-hls_segment_filename": "${workPath}\\encoded%d_%v.ts"
+    }
+}
+```
+
+The `-hls_segment_filename` flag requires the absolute paths or else it would save on the working path of the nexrender application hence the use of `${workPath}`
+
 
 # Template rendering
 
@@ -1245,6 +1281,11 @@ localhostForwarding=true
 
 > Github Issue: [WSL 2 consumes massive amounts of RAM and doesn't return it](https://github.com/microsoft/WSL/issues/4166)
 
+## Problems
+
+There might be a lot of problems creeping around, since this tool works as an intermediary and coordinator for a bunch of existing complex technologies, problems is something inescapable. However, we will try our best to expand and keep this section up to date with all possible caveats and solutions for those problems.
+
+1. macOS access: there might be issues with nexrender accessing the aerender binary within the Adobe library folder, or accessing /tmp folders. For more details refer to https://github.com/inlife/nexrender/issues/534
 
 ## Development
 

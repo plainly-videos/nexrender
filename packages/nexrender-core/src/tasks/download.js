@@ -26,13 +26,26 @@ const download = (job, settings, asset) => {
 
         /* prevent same name file collisions */
         if (fs.existsSync(path.join(job.workpath, destName))) {
-            destName = Math.random().toString(36).substring(2) + '.' + path.extname(asset.src);
+            destName = Math.random().toString(36).substring(2) + path.extname(asset.src);
         }
     }
 
     /* force asset name if it is provided */
     if (asset.name) {
         destName = asset.name
+    }
+
+    /* try to guess the extension from data part */
+    if (protocol == 'data' && !asset.extension) {
+        let databuf = data2buf(asset.src)
+
+        switch (databuf.type) {
+            case 'image/png': asset.extension = 'png'; break;
+            case 'image/gif': asset.extension = 'gif'; break;
+            case 'image/bmp': asset.extension = 'bmp'; break;
+            case 'image/jpeg': asset.extension = 'jpg'; break;
+            case 'application/json': asset.extension = 'json'; break;
+        }
     }
 
     if (asset.extension) {

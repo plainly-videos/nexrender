@@ -70,6 +70,8 @@ const init = (settings) => {
         imageCachePercent: undefined,
         wslMap: undefined,
 
+        onInstanceSpawn: undefined,
+
         __initialized: true,
     }, settings, {
         binary: binaryUser || binaryAuto,

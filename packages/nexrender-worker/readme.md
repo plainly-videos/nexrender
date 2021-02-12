@@ -1,36 +1,52 @@
-# Core
+# Worker
 
-In case you are building your own application and just need to use a rendering part, or you wanna manually trigger jobs from your code,
-there is a way to use nexrender programmatically:
+A CLI application which is responsible mainly for actual job processing and rendering,
+communication with the `nexrender-server`, and serves mainly as a consumer in the nexrender network model.
 
-## Installation
-Install the [@nexrender/core](https://github.com/inlife/nexrender/tree/master/packages/nexrender-core)
+#### Supported platforms:
+Windows, macOS
+
+#### Requirements:
+Installed licensed/trial version of Adobe After Effects
+
+## Binary
+
+### Installation
+
+You can download binaries directly from the [releases](https://github.com/inlife/nexrender/releases) section
+
+### Usage
 
 ```sh
-$ npm install @nexrender/core --save
+$ nexrender-worker \
+        --host=https://my.server.com:3050 \
+        --secret=myapisecret
 ```
 
-## Usage
+> Note: its recommended to run `nexrender-worker -h` at least once, to read all useful information about available options.
+
+## Programmatic
+
+### Installation
+
+Install the [@nexrender/worker](https://github.com/inlife/nexrender/tree/master/packages/nexrender-worker)
+
+```sh
+$ npm install @nexrender/worker --save
+```
+
+### Usage
 
 And then load it, and run it
 
 ```js
-const { render } = require('@nexrender/core')
+const { start } = require('@nexrender/worker')
 
 const main = async () => {
-    const result = await render(/*myJobJson*/)
-}
+    const serverHost = 'http://localhost:3000'
+    const serverSecret = 'mysecret'
 
-main().catch(console.error);
-```
-
-Or you can go more advanced, and provide some settings as your 2nd argument to the `render` function:
-
-```js
-const { render } = require('@nexrender/core')
-
-const main = async () => {
-    const result = await render(/*myJobJson*/, {
+    await start(serverHost, serverSecret, {
         workpath: '/Users/myname/.nexrender/',
         binary: '/Users/mynames/Applications/aerender',
         skipCleanup: true,
@@ -42,16 +58,9 @@ const main = async () => {
 main().catch(console.error);
 ````
 
-## Information
+### Information
 
-The module reuturns 2 methods, `init` and `render`.
-
-First one is responsible for setting up the env, checking if all needed patches for AE are in place,
-automatically adding render-only license file for a free usage of Adobe's product (unless disabled), and a few other minor things.
-
-Second one is responsible for mainly job-related operations of the full cycle: downloading, rendering, processing, and uploading.
-
-`init` accepts an object, containing additional options:
+Available settings (almost same as for `nexrender-core`):
 
 * `workpath` - string, manually set path to working directory where project folder will be created, overrides default one in system temp folder
 * `binary` - string, manually set path pointing to the aerender(.exe) binary, overrides auto found one
@@ -64,4 +73,8 @@ Second one is responsible for mainly job-related operations of the full cycle: d
 * `imageCachePercent` - integer, undefined by default, check [original documentation](https://helpx.adobe.com/after-effects/using/automated-rendering-network-rendering.html) for more info
 * `addLicense` - boolean, providing false will disable ae_render_only_node.txt license file auto-creation (true by default)
 * `forceCommandLinePatch` - boolean, providing true will force patch re-installation
-* `onInstanceSpawn` - a callback, if provided, gets called when **aerender** instance is getting spawned, with instance pointer. Can be later used to kill a hung aerender process. Callback signature: `function (instance, job, settings) {}`
+* `stopOnError` - boolean, stop the pick-up-and-render process if an error occurs (false by default)
+* `polling` - number, amount of miliseconds to wait before checking queued projects from the api, if specified will be used instead of NEXRENDER_API_POLLING env variable
+* `wslMap` - string, drive letter of your WSL mapping in Windows
+* `aeParams` - array of strings, any additional params that will be passed to the aerender binary, a name-value parameter pair separated by a space
+
