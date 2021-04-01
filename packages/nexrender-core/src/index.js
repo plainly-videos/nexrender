@@ -32,6 +32,7 @@ if (process.env.NEXRENDER_REQUIRE_PLUGINS) {
     require('@nexrender/provider-ftp');
     require('@nexrender/provider-gs');
     require('@nexrender/provider-plainly');
+    require('@nexrender/action-fonts-plainly');
 }
 
 //
