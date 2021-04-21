@@ -3,7 +3,7 @@ const path     = require('path')
 const {name}   = require('./package.json')
 const requireg = require('requireg')
 
-module.exports = (job, settings, { input, provider, params, ...options }, type) => {
+module.exports = (job, settings, { input, provider, params, skipNotExist, ...options }, type) => {
     let onProgress;
     let onComplete;
 
@@ -20,6 +20,16 @@ module.exports = (job, settings, { input, provider, params, ...options }, type) 
 
     /* fill absolute/relative paths */
     if (!path.isAbsolute(input)) input = path.join(job.workpath, input);
+
+    /* check if input exists */
+    if (!fs.existsSync(input)) {
+      if (skipNotExist === true) {
+        settings.logger.log(`[${job.uid}] action-upload: '${input}' does not exist. Skipping.`)
+        return Promise.resolve()
+      } else {
+        throw new Error(`'${input}' does not exist.`)
+      }
+    }
 
     if (options.hasOwnProperty('onProgress') && typeof options['onProgress'] == 'function') {
         onProgress = (job, progress) => options.onProgress(job, progress);

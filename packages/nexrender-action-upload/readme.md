@@ -26,7 +26,8 @@ When creating your render job provide this module as one of the `postrender` act
                     "bucket": "name-of-your-bucket",
                     "key": "folder/output.mp4",
                     "acl": "public-read"
-                }
+                },
+                "skipNotExist": true // Continue if the input file does not exist
             }
         ]
     }
