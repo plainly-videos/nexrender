@@ -110,8 +110,8 @@ const upload = (job, settings, src, params, onProgress, onComplete) => {
     let key = params.key;
 
     if (params.glob) {
-      key = `${params.key}/${params.filePath}`;
-      settings.logger.log(`[${job.uid}] action-upload: Bucket key set to ${key}`);
+        key = `${params.key}/${params.filePath}`;
+        settings.logger.log(`[${job.uid}] action-upload: Bucket key set to ${key}`);
     }
 
     const onUploadProgress = (e) => {

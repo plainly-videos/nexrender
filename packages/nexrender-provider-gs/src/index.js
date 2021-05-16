@@ -40,8 +40,8 @@ const upload = (job, settings, src, params) => {
     let item = params.item;
 
     if (params.glob) {
-      item = `${params.item}/${params.filePath}`;
-      settings.logger.log(`[${job.uid}] action-upload: Bucket item set to ${item}`);
+        item = `${params.item}/${params.filePath}`;
+        settings.logger.log(`[${job.uid}] action-upload: Bucket item set to ${item}`);
     }
 
     const onUploadStart = (src) => {
