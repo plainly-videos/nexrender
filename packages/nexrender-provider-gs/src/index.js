@@ -36,6 +36,13 @@ const upload = (job, settings, src, params) => {
     if (!params.item) {
         return Promise.reject(new Error('GCS item not provided.'))
     }
+    // Override file path if input is glob
+    let item = params.item;
+
+    if (params.glob) {
+        item = `${params.item}/${params.filePath}`;
+        settings.logger.log(`[${job.uid}] action-upload: Bucket item set to ${item}`);
+    }
 
     const onUploadStart = (src) => {
         settings.logger.log(`[${job.uid}] action-upload: upload started`)
@@ -47,7 +54,7 @@ const upload = (job, settings, src, params) => {
 
     return new Promise((resolve, reject) => {
         const bucket = storage.bucket(params.bucket)
-        const file = bucket.file(params.item)
+        const file = bucket.file(item)
         const options = {
             metadata: {}
         }
