@@ -6,6 +6,7 @@ const uri2path = require('file-uri-to-path')
 const data2buf = require('data-uri-to-buffer')
 const mime = require('mime-types')
 const {expandEnvironmentVariables} = require('../helpers/path')
+const aeFormats = require('../helpers/aeFormats')
 
 // TODO: redeuce dep size
 const requireg = require('requireg')
@@ -86,7 +87,12 @@ const download = (job, settings, asset) => {
                         asset.extension = destExtension
                       } else {
                         if (fileExtensions.length > 0) {
-                          asset.extension = fileExtensions[0];
+                          for (const ext of fileExtensions) {
+                            if (aeFormats.indexOf(ext) >= 0) {
+                              asset.extension = ext;
+                              break;
+                            }
+                          }
                         }
                       }
 
