@@ -1,6 +1,6 @@
 const FORMATS = [
   // AUDIO
-  'mp2',
+  // 'mp2', fuck off
   'aac',
   'm4a',
   'aif',
