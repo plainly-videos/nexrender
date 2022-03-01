@@ -73,19 +73,18 @@ const start = async (host, secret, settings) => {
 
         try {
             job.onRenderProgress = function (job, /* progress */) {
-                try {
-                    /* send render progress to our server */
-                    client.updateJob(job.uid, getRenderingStatus(job))
-                } catch (err) {
-                    
-                    if (settings.stopOnError) {
-                        throw err;
-                    } else {
-                        console.log(`[${job.uid}] error occurred: ${err.stack}`)
-                        console.log(`[${job.uid}] render proccess stopped with error...`)
-                        console.log(`[${job.uid}] continue listening next job...`)
-                    }
-                }
+                // try {
+                //     /* send render progress to our server */
+                //     client.updateJob(job.uid, getRenderingStatus(job))
+                // } catch (err) {
+                //     if (settings.stopOnError) {
+                //         throw err;
+                //     } else {
+                //         console.log(`[${job.uid}] error occurred: ${err.stack}`)
+                //         console.log(`[${job.uid}] render proccess stopped with error...`)
+                //         console.log(`[${job.uid}] continue listening next job...`)
+                //     }
+                // }
             }
 
             job.onRenderError = function (_, err /* on render error */) {
