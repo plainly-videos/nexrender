@@ -73,18 +73,18 @@ const start = async (host, secret, settings) => {
 
         try {
             job.onRenderProgress = function (job, /* progress */) {
-                // try {
-                //     /* send render progress to our server */
-                //     client.updateJob(job.uid, getRenderingStatus(job))
-                // } catch (err) {
-                //     if (settings.stopOnError) {
-                //         throw err;
-                //     } else {
-                //         console.log(`[${job.uid}] error occurred: ${err.stack}`)
-                //         console.log(`[${job.uid}] render proccess stopped with error...`)
-                //         console.log(`[${job.uid}] continue listening next job...`)
-                //     }
-                // }
+                try {
+                    /* send render progress to our server */
+                    client.updateJob(job.uid, getRenderingStatus(job))
+                } catch (err) {
+                    if (settings.stopOnError) {
+                        throw err;
+                    } else {
+                        console.log(`[${job.uid}] error occurred: ${err.stack}`)
+                        console.log(`[${job.uid}] render proccess stopped with error...`)
+                        console.log(`[${job.uid}] continue listening next job...`)
+                    }
+                }
             }
 
             job.onRenderError = function (_, err /* on render error */) {
@@ -101,7 +101,17 @@ const start = async (host, secret, settings) => {
                 job.finishedAt = new Date()
             }
 
-            await client.updateJob(job.uid, getRenderingStatus(job))
+            /* ensure that we sucessfuly inform the server on the job done */
+            while (true) {
+                try {
+                    await client.updateJob(job.uid, getRenderingStatus(job))
+                    break;
+                } catch (finalUpdateError) {
+                    /* in case of an error delay retry */
+                    console.log(`[${job.uid}] error occurred on final update, retrying after delay: ${err.stack}`)
+                    await delay(settings.polling || NEXRENDER_API_POLLING)
+                }
+            }
         } catch (err) {
             job.state = 'error';
 
