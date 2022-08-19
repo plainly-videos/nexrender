@@ -19,6 +19,8 @@ jobs:
       run: npm install
     - name: Install child dependencies
       run: npm run install-child
+    - name: Link projects (lerna bootstrap)
+      run: npm run start
     - name: Build binaries
       run: npm run pkg
     - name: Publish release
