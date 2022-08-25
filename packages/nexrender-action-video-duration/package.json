@@ -1,0 +1,10 @@
+{
+  "name": "@nexrender/action-video-duration",
+  "author": "Plainly",
+  "version": "1.0.0",
+  "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {}
+}
