@@ -3,9 +3,11 @@ const { init, render } = require('@nexrender/core')
 const { getRenderingStatus } = require('@nexrender/types/job')
 
 const NEXRENDER_API_POLLING = process.env.NEXRENDER_API_POLLING || 30 * 1000;
+const NEXRENDER_MAX_EMPTY_PULL = process.env.NEXRENDER_MAX_EMPTY_PULL || -1
 
 /* TODO: possibly add support for graceful shutdown */
 let active = true;
+let noJobPulls = 0;
 
 const delay = amount => (
     new Promise(resolve => setTimeout(resolve, amount))
@@ -17,7 +19,8 @@ const nextJob = async (client, settings) => {
             const job = await client.pickupJob();
 
             if (job && job.uid) {
-                return job
+                noJobPulls = 0;
+                return job;
             }
         } catch (err) {
             if (settings.stopOnError) {
@@ -25,6 +28,11 @@ const nextJob = async (client, settings) => {
             } else {
                 console.error(err)
             }
+        }
+
+        // break in case max emtpy pulls setting is set and we are over it
+        if (NEXRENDER_MAX_EMPTY_PULL > 0 && ++noJobPulls >= NEXRENDER_MAX_EMPTY_PULL) {
+            return null;
         }
 
         await delay(settings.polling || NEXRENDER_API_POLLING)
@@ -47,7 +55,13 @@ const start = async (host, secret, settings) => {
     const client = createClient({ host, secret });
 
     do {
-        let job = await nextJob(client, settings); {
+        let job = await nextJob(client, settings); 
+        
+        // if we don't have job, breakout
+        if (!job) {
+            console.log(`Stpping the worker, reached ${NEXRENDER_MAX_EMPTY_PULL} pulls with no returned job.`)
+            break;
+        } else {
             job.state = 'started';
             job.startedAt = new Date()
         }
