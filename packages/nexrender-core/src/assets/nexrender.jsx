@@ -20,6 +20,9 @@ nexrender.typesMatch = function (types, layer) {
 nexrender.replaceFootage = function (layer, filepath) {
     if (!layer) { return false; }
 
+    var oldLayerName = layer.name;
+    var isNameSet = layer.isNameSet;
+
     var file = new File(filepath);
 
     if (!file.exists) {
@@ -29,6 +32,11 @@ nexrender.replaceFootage = function (layer, filepath) {
     var importOptions = new ImportOptions(file);
     //importOptions.importAs = ImportAsType.COMP; // you can do stuff like this at this point for PSDs
     var theImport = app.project.importFile(importOptions);
+    
+    if (!isNameSet) {
+        theImport.name = oldLayerName;
+    }
+
     layer.replaceSource(theImport, true);
 
     return true;
