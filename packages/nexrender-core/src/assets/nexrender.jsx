@@ -9,6 +9,7 @@ var nexrender = {
     renderCompositionName: '/*COMPOSITION*/',
     defaultCompositionName: '*',
     types: [CompItem, FolderItem, FootageItem, AVLayer, ShapeLayer, TextLayer, CameraLayer, LightLayer, Property, PropertyGroup],
+    replacedLayers: [],
 };
 
 nexrender.typesMatch = function (types, layer) {
@@ -32,12 +33,14 @@ nexrender.replaceFootage = function (layer, filepath) {
     var importOptions = new ImportOptions(file);
     //importOptions.importAs = ImportAsType.COMP; // you can do stuff like this at this point for PSDs
     var theImport = app.project.importFile(importOptions);
-    
+
     if (!isNameSet) {
         theImport.name = oldLayerName;
     }
 
     layer.replaceSource(theImport, true);
+
+    nexrender.replacedLayers.push(layer);
 
     return true;
 };
