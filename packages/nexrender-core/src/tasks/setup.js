@@ -1,9 +1,11 @@
 const os      = require('os')
+const fs      = require('fs')
 const path    = require('path')
 const mkdirp  = require('mkdirp')
 const assert  = require('assert')
 
 const { validate } = require('@nexrender/types/job')
+const autofind = require('../helpers/autofind')
 
 /**
  * This task creates working directory for current job
@@ -60,6 +62,23 @@ P.S. to prevent nexrender from removing temp file data, you also can please prov
     mkdirp.sync(job.workpath);
 
     settings.logger.log(`[${job.uid}] working directory is: ${job.workpath}`);
+
+    // update aebinary to match version from the job
+    try {
+      const aeVersionYear = job.tags
+                                .filter(tag => tag.startsWith("AE"))
+                                .map(tag => new RegExp(/AE(\d+)/).exec(tag)[1])[0];
+      const aeBinary = autofind(settings, aeVersionYear);
+      if (fs.existsSync(aeBinary)) {
+        settings.binary = aeBinary;
+        settings.logger.log(`[${job.uid}] Detected AE version tag, setting binary to: ${aeBinary}`);
+      } else {
+        settings.logger.log(`[${job.uid}] AE ${aeVersionYear} is not installed, keeping default binary: ${settings.binary}`);
+      }
+    } catch {
+      // AENA tag falls here
+      settings.logger.log(`[${job.uid}] AE version tag missing, keeping default binary: ${settings.binary}`);
+    }
 
     return Promise.resolve(job)
 };

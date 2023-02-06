@@ -75,12 +75,13 @@ const defaultPaths = {
 }
 
 /**
- * Attemnt to find a aebinary path automatically
+ * Attempt to find a aebinary path automatically
  * (using a table of predefined paths)
  * @param  {Object} settings
+ * @param {String|undefined} versionYear
  * @return {String|null}
  */
-module.exports = settings => {
+module.exports = (settings, versionYear) => {
     let platform = os.platform()
 
     if (settings.wsl) platform = 'wsl'
@@ -92,6 +93,7 @@ module.exports = settings => {
     const binary  = 'aerender' + (platform === 'win32' || platform === 'wsl' ? '.exe' : '' )
     const results = defaultPaths[platform]
         .map(folderPath => path.join(folderPath, binary))
+        .filter(binaryPath => binaryPath.indexOf(versionYear || '') >= 0)
         .filter(binaryPath => fs.existsSync(binaryPath))
 
     // return first matched result

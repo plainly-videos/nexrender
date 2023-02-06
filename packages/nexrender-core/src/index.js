@@ -102,6 +102,8 @@ const init = (settings) => {
 
     // attempt to patch the default
     // Scripts/commandLineRenderer.jsx
+
+    // TODO: Patch in all existing AE dirs
     patch(settings);
 
     return settings;
