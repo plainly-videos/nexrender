@@ -52,6 +52,7 @@ const init = (settings) => {
 
     const binaryAuto = autofind(settings);
     const binaryUser = settings.binary && fs.existsSync(settings.binary) ? settings.binary : null;
+    const defaultBinary = binaryUser || binaryAuto;
 
     if (!binaryUser && !binaryAuto) {
         throw new Error('you should provide a proper path to After Effects\' "aerender" binary')
@@ -82,7 +83,8 @@ const init = (settings) => {
 
         __initialized: true,
     }, settings, {
-        binary: binaryUser || binaryAuto,
+        defaultBinary,
+        binary: defaultBinary,
     })
 
     // make sure we will have absolute path
