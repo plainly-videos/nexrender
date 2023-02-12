@@ -1,9 +1,31 @@
 const os      = require('os')
+const fs      = require('fs')
 const path    = require('path')
 const mkdirp  = require('mkdirp')
 const assert  = require('assert')
 
 const { validate } = require('@nexrender/types/job')
+const autofind = require('../helpers/autofind')
+
+/**
+ * Extract year number from version tag.
+ * e.g.
+ *  tags: ["AE2022"] -> 2022
+ *  tags: ["AE2023"] -> 2023
+ *  tags: ["AENA"] -> undefined
+ *  tags: [] -> undefined
+ * @param {Job} job
+ * @returns
+ */
+const getAeVersionYear = job => {
+  try {
+    return job.tags
+              .filter(tag => tag.startsWith("AE"))
+              .map(tag => new RegExp(/AE(\d+)/).exec(tag)[1])[0];
+  } catch {
+    return undefined;
+  }
+}
 
 /**
  * This task creates working directory for current job
@@ -60,6 +82,18 @@ P.S. to prevent nexrender from removing temp file data, you also can please prov
     mkdirp.sync(job.workpath);
 
     settings.logger.log(`[${job.uid}] working directory is: ${job.workpath}`);
+
+    // update aebinary to match version from the job
+    settings.binary = settings.defaultBinary; // revert to the default
+
+    const aeVersionYear = getAeVersionYear(job);
+    const aeBinary = autofind(settings, aeVersionYear);
+    if (fs.existsSync(aeBinary)) {
+      settings.binary = aeBinary;
+      settings.logger.log(`[${job.uid}] Detected AE version tag, setting binary to: ${aeBinary}`);
+    } else {
+      settings.logger.log(`[${job.uid}] AE version unknown or not installed, keeping default binary: ${settings.binary}`);
+    }
 
     return Promise.resolve(job)
 };
