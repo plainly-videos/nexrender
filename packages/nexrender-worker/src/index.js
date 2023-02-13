@@ -32,7 +32,7 @@ const nextJob = async (client, settings) => {
                 throw err;
             } else {
                 console.error(err)
-                console.error("render proccess stopped with error...")
+                console.error("render process stopped with error...")
                 console.error("continue listening next job...")
             }
         }
@@ -66,11 +66,11 @@ const start = async (host, secret, settings) => {
     const client = createClient({ host, secret });
 
     do {
-        let job = await nextJob(client, settings); 
-        
+        let job = await nextJob(client, settings);
+
         // if we don't have job, breakout
         if (!job) {
-            console.log(`Stpping the worker, reached ${NEXRENDER_MAX_EMPTY_PULL} pulls with no returned job.`)
+            console.log(`Stopping the worker, reached ${NEXRENDER_MAX_EMPTY_PULL} pulls with no returned job.`)
             break;
         } else {
             job.state = 'started';
@@ -179,6 +179,18 @@ const start = async (host, secret, settings) => {
             }
         }
     } while (active)
+
+    console.info('Worker stopped.')
 }
+
+/**
+ * Handle different signals to stop fetching additional jobs.
+ */
+['SIGTERM', 'SIGINT'].forEach(signalCode => {
+  process.on(signalCode, () => {
+    console.info(`${signalCode} signal received. Worker will stop fetching new jobs.`);
+    active = false;
+  });
+})
 
 module.exports = { start }
