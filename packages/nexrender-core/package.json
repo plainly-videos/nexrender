@@ -28,7 +28,7 @@
     "@nexrender/provider-sftp": "^1.37.9",
     "@nexrender/provider-plainly": "file:./../nexrender-provider-plainly",
     "@nexrender/action-fonts-plainly": "file:./../nexrender-action-fonts-plainly",
-    "@nexrender/action-video-duration": "file:./../nexrender-action-video-plainly"
+    "@nexrender/action-video-duration": "file:./../nexrender-action-video-duration"
   },
   "publishConfig": {
     "access": "public"
