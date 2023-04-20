@@ -74,8 +74,13 @@ const download = (job, settings, asset) => {
                 .then(res => {
                     // Set a file extension based on content-type header if not already set
                     if (!asset.extension) {
-                      const contentType = res.headers.get('content-type')
+                      let contentType = res.headers.get('content-type')
                       const destExtension = path.extname(asset.dest)
+
+                      // `image/jpg` is not a valid mime-type, but let's convert it to `image/jpeg`
+                      if (contentType === "image/jpg") {
+                        contentType = "image/jpeg"
+                      }
 
                       // Get all file extensions by content type
                       // e.g.
