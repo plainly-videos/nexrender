@@ -47,6 +47,7 @@ const FORMATS = [
   'tdi',
   'jpg',
   'jpe',
+  'jpeg',
   'heif',
   'heic',
   'ma',
