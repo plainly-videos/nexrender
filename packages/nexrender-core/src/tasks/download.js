@@ -1,7 +1,7 @@
 const fs       = require('fs')
 const url      = require('url')
 const path     = require('path')
-const fetch    = require('node-fetch').default
+const fetch    = require('make-fetch-happen')
 const uri2path = require('file-uri-to-path')
 const data2buf = require('data-uri-to-buffer')
 const mime = require('mime-types')
@@ -67,9 +67,21 @@ const download = (job, settings, asset) => {
 
         case 'http':
         case 'https':
+            // Use default cache path if `settings.cache` param is set to simply `true`
+            // Otherwise use value directly (can be string to file path or undefined)
+            const cachePath = settings.cache === true ?
+                path.join(settings.workpath, "http-cache") :
+                settings.cache;
+
+            if(!asset.params) asset.params = {};
+            // Asset's own `params.cachePath` takes precedence (including falsy values)
+            asset.params.cachePath = Object.hasOwn(asset.params, 'cachePath') ?
+                asset.params.cachePath :
+                cachePath;
+
             /* TODO: maybe move to external package ?? */
-            const src = asset.src;
-            return fetch(src, asset.params || {})
+            const src = decodeURI(asset.src) === asset.src ? encodeURI(asset.src): asset.src
+            return fetch(src, asset.params)
                 .then(res => res.ok ? res : Promise.reject({reason: 'Initial error downloading file', meta: {src, error: res.error}}))
                 .then(res => {
                     // Set a file extension based on content-type header if not already set
