@@ -1,21 +1,9 @@
 const fetch = require('isomorphic-unfetch')
 
-const createClient = ({ host, secret, polling, headers }) => {
+const createClient = ({ host, secret, polling }) => {
     const wrappedFetch = async (path, options) => {
         options = options || {}
-
-        const defaultHeaders = {};
-        if(headers){
-            for(const [key, value] of Object.entries(headers)){
-                if(typeof value === "string"){
-                    defaultHeaders[key] = value;
-                }else if(typeof value === "function"){
-                    defaultHeaders[key] = await value();
-                }
-            }
-        }
-
-        options.headers = Object.assign(defaultHeaders, options.headers);
+        options.headers = options.headers || {}
 
         if (secret) {
             options.headers['nexrender-secret'] = secret
