@@ -182,12 +182,12 @@ nexrender.selectLayersByType = function(
   });
 
   if (!foundOnce && !continueOnMissing) {
-    throw new Error( 
-      "nexrender: Couldn't find any layers by provided type (" 
+    throw new Error(
+      "nexrender: Couldn't find any layers by provided type ("
       + type +
-      ") inside a composition: " 
+      ") inside a composition: "
       + compositionName
-    ); 
+    );
   }
 };
 
@@ -248,7 +248,7 @@ nexrender.changeValueForKeypath = function (layer, keys, val) {
                 }
                 return { "value": o, "changed": true };
             } else {
-                throw new Error("nexrender: Can't find a property sequence " + keys.join('.') + " for key: " + key);
+                throw new Error("nexrender: Can't find a property sequence " + keys.join('.') + " for key: " + key + "within layer: " + layer);
             }
         }
     }

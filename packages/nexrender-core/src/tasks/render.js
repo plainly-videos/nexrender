@@ -7,7 +7,7 @@ const progressRegex = /([\d]{1,2}:[\d]{2}:[\d]{2}:[\d]{2})\s+(\(\d+\))/gi;
 const durationRegex = /Duration:\s+([\d]{1,2}:[\d]{2}:[\d]{2}:[\d]{2})/gi;
 const startRegex = /Start:\s+([\d]{1,2}:[\d]{2}:[\d]{2}:[\d]{2})/gi;
 const nexrenderErrorRegex = /Error:\s+(nexrender:.*)$/gim;
-const errorRegex =          /aerender Error:\s*(.*)$/gis;
+const errorRegex = /aerender Error:\s*(.*)$/gis;
 
 const option = (params, name, ...values) => {
     if (values !== undefined) {
@@ -120,7 +120,7 @@ module.exports = (job, settings) => {
         if(matchError !== null && !errorSent){
             settings.logger.log(`[${job.uid}] rendering reached an error: ${matchError[1]}`);
             if (job.hasOwnProperty('onRenderError') && typeof job['onRenderError'] == 'function') {
-                job.onRenderError(job, matchError[1]);
+                job.onRenderError(job, new Error(matchError[1]));
             }
             errorSent = true
         }
@@ -186,18 +186,23 @@ module.exports = (job, settings) => {
             // the outputfile appears to be forced as .mov.
             // We need to maintain this here while we have 2022 and 2020
             // workers simultaneously
-            const movOutputFile = outputFile.replace(/\.avi$/g, '.mov')
-            const existsMovOutputFile = fs.existsSync(movOutputFile)
-            if (existsMovOutputFile) {
-              job.output = movOutputFile
-            } else {
-                // AE 2023 use mp4 output files
-                const mp4OutputFile = outputFile.replace(/\.avi$/g, '.mp4')
-                const existsMp4OutputFile = fs.existsSync(mp4OutputFile)
-                if (existsMp4OutputFile) {
-                    job.output = mp4OutputFile
-                }
+            const defaultOutputs = [
+                job.output,
+                job.output.replace(/\.avi$/g, '.mov'),
+                job.output.replace(/\.avi$/g, '.mp4'),
+                job.output.replace(/\.mov$/g, '.avi'),
+                job.output.replace(/\.mov$/g, '.mp4'),
+            ]
+
+            while (!fs.existsSync(defaultOutputs[0]) && defaultOutputs.length > 0) {
+                defaultOutputs.shift();
             }
+
+            if (defaultOutputs.length === 0) {
+                return reject(new Error(`Output file not found: ${job.output}`));
+            }
+
+            job.output = defaultOutputs[0];
 
             if (!fs.existsSync(job.output)) {
                 if (fs.existsSync(logPath)) {
